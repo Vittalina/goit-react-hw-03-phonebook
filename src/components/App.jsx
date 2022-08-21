@@ -4,11 +4,27 @@ import Phonebook from 'components/Phonebook/Phonebook';
 import Contacts from 'components/Contacts/Contacts';
 import Filter from 'components/Filter/Filter';
 
+// const LOCALSTORAGE_KEY = 'key_for_contacts';
+
 class App extends Component {
   state = {
     contacts: [],
     filter: '',
   };
+
+  componentDidMount() {
+    const savedState = localStorage.getItem('contacts');
+
+    if (savedState) {
+      this.setState({ contacts: JSON.parse(savedState) });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
 
   onSubmitData = data => {
     const filteredNames = this.state.contacts.filter(
@@ -29,8 +45,6 @@ class App extends Component {
     this.setState({
       filter: value.filter,
     });
-
-    // this.setState({ filter: event.target.value });
   };
 
   onClickDelete = id => {
