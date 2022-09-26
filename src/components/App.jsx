@@ -27,12 +27,10 @@ class App extends Component {
   }
 
   onSubmitData = data => {
-    const filteredNames = this.state.contacts.filter(
-      contact => contact.name.toLowerCase() === data.name.toLowerCase()
-    );
-    console.log(filteredNames);
-
-    if (filteredNames.length > 0) {
+    if (
+      this.state.contacts.filter(contact => contact.name === data.name).length >
+      0
+    ) {
       alert(`${data.name} is already in contacts`);
       return;
     }
@@ -41,10 +39,8 @@ class App extends Component {
     }));
   };
 
-  filterByName = value => {
-    this.setState({
-      filter: value.filter,
-    });
+  changeFilter = e => {
+    this.setState({ filter: e.currentTarget.value });
   };
 
   onClickDelete = id => {
@@ -54,6 +50,14 @@ class App extends Component {
   };
 
   render() {
+    const { contacts, filter } = this.state;
+
+    const normalizedFilter = filter.toLowerCase();
+    const filteredNames = contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter)
+    );
+    console.log(filteredNames);
+
     return (
       <Box
         p={100}
@@ -70,11 +74,8 @@ class App extends Component {
         <Phonebook onSubmit={this.onSubmitData} />
         <h2>Contacts</h2>
 
-        <Filter onChange={this.filterByName} />
-        <Contacts
-          contacts={this.state.contacts}
-          onClickDelete={this.onClickDelete}
-        />
+        <Filter value={filter} onChange={this.changeFilter} />
+        <Contacts contacts={filteredNames} onClickDelete={this.onClickDelete} />
       </Box>
     );
   }
